@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>About Us</h1>
+  
+  <p>We are a team of students at the University of North Carolina at Charlotte who are passionate about helping others find the perfect dorm experience. Our goal is to provide a platform where students can rate and review dorms to help future students make informed decisions.</p>
+  
+  <h2>Meet the Team</h2>
+  
+  <div class="row">
+    <div class="col-lg-4 col-md-6">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/team-member1.jpg') }}" class="card-img-top" alt="Team Member 1">
+        <div class="card-body">
+          <h5 class="card-title">Dhruv M</h5>
+          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam mauris vel ante dictum, non tristique neque tristique.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/team-member2.jpg') }}" class="card-img-top" alt="Team Member 2">
+        <div class="card-body">
+          <h5 class="card-title">Manav M</h5>
+          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam mauris vel ante dictum, non tristique neque tristique.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6">
+        <div class="card">
+          <img src="{{ url_for('static', filename='images/team-member2.jpg') }}" class="card-img-top" alt="Team Member 2">
+          <div class="card-body">
+            <h5 class="card-title">Mohamoud M</h5>
+            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam mauris vel ante dictum, non tristique neque tristique.</p>
+          </div>
+        </div>
+      </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/team-member3.jpg') }}" class="card-img-top" alt="Team Member 3">
+        <div class="card-body">
+          <h5 class="card-title">Ayush L</h5>
+          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed aliquam mauris vel ante dictum, non tristique neque tristique.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

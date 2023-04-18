@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Welcome to the Dashboard</h1>
+  
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card">
+        <img src="{{ url_for('static', filename='dorm1.jpeg') }}" class="card-img-top" alt="Dorm 1">
+        <div class="card-body">
+          <h5 class="card-title">Dorm 1</h5>
+          <p class="card-text">Description of Dorm 1.</p>
+          <a href="#" class="btn btn-primary">Rate Dorm</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/dorm2.jpg') }}" class="card-img-top" alt="Dorm 2">
+        <div class="card-body">
+          <h5 class="card-title">Dorm 2</h5>
+          <p class="card-text">Description of Dorm 2.</p>
+          <a href="#" class="btn btn-primary">Rate Dorm</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/dorm3.jpg') }}" class="card-img-top" alt="Dorm 3">
+        <div class="card-body">
+          <h5 class="card-title">Dorm 3</h5>
+          <p class="card-text">Description of Dorm 3.</p>
+          <a href="#" class="btn btn-primary">Rate Dorm</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 col-sm-12">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/dorm4.jpg') }}" class="card-img-top" alt="Dorm 4">
+        <div class="card-body">
+          <h5 class="card-title">Dorm 4</h5>
+          <p class="card-text">Description of Dorm 4.</p>
+          <a href="#" class="btn btn-primary">Rate Dorm</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <hr>
+  
+  <!-- Featured dorms -->
+  <section>
+    <h2>Featured Dorms</h2>
+    <div class="row">
+      <div class="col-md-4">
+        <img src="{{ url_for('static', filename='images/dorm5.jpg') }}" alt="Dorm 5">
+        <h3>Dorm 5</h3>
+        <p>Description of Dorm 5.</p>
+        <a href="#" class="btn btn-primary">Rate Dorm</a>
+      </div>
+      
+      <div class="col-md-4">
+        <img src="{{ url_for('static', filename='images/dorm6.jpg') }}" alt="Dorm 6">
+        <h3>Dorm 6</h3>
+        <p>Description of Dorm 6.</p>
+        <a href="#" class="btn btn-primary">Rate Dorm</a>
+      </div>
+
+      <div class="col-md-4">
+        <img src="{{ url_for('static', filename='images/dorm7.jpg') }}" alt="Dorm 7">
+        <h3>Dorm 7</h3>
+        <p>Description of Dorm 7.</p>
+        <a href="#" class="btn btn-primary">Rate Dorm</a>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+     
