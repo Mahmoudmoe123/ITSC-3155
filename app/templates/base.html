@@ -22,7 +22,7 @@
 					<a class="nav-link" href="/dash">Home</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="/about">About</a>
+					<a class="nav-link" href="/schools">Schools</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/dorms">View Dorms</a>
@@ -38,6 +38,9 @@
       {{ current_user.username }}
     </a>
     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+      {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <a class="dropdown-item" href="{{ url_for('admin') }}">Admin</a>
+      {% endif %}
       <a class="dropdown-item" href="{{ url_for('signout') }}">Sign Out</a>
     </div>
   </div>

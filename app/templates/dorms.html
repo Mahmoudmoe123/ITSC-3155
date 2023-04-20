@@ -18,15 +18,15 @@
     </div>
 </div>
     
-    <div class="row" id="dorm-cards">
-      {% for dorm in dorms %}
-        <div class="col-md-4 dorm-card">
-          <div class="card mb-4 shadow-sm border-0">
-            <img src="{{ dorm.image_url }}" class="card-img-top" alt="{{ dorm.name }}">
-            <div class="card-body">
-              <h5 class="card-title mb-2">{{ dorm.name }}</h5>
-              <p class="card-text text-truncate">{{ dorm.description }}</p>
-              {% if dorm.average_rating %}
+<div class="row" id="dorm-cards">
+  {% for dorm in dorms %}
+    <div class="col-md-4 dorm-card">
+      <div class="card mb-4 shadow-sm border-0">
+        <img src="{{ dorm.image_url }}" class="card-img-top" alt="{{ dorm.name }}">
+        <div class="card-body">
+          <h5 class="card-title mb-2">{{ dorm.name }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ dorm.school.name }}</h6>
+          {% if dorm.average_rating %}
                 <p class="card-text mb-1">Average Rating: {{ "%.1f"|format(dorm.average_rating) }}</p>
               {% else %}
                 <p class="card-text mb-1">No ratings available.</p>
@@ -36,12 +36,11 @@
                 {% if current_user.is_authenticated %}
                   <a href="{{ url_for('rate_dorm', dorm_id=dorm.id) }}" class="btn btn-secondary">Rate Dorm</a>
                 {% endif %}
-              </div>
-            </div>
-          </div>
         </div>
-      {% endfor %}
+      </div>
     </div>
+  {% endfor %}
+</div>
   </div>
 
   <!-- Add Dorm Modal -->
@@ -55,33 +54,12 @@
           </button>
         </div>
         <div class="modal-body">
-          <form action="{{ url_for('add_dorm', dorm_id=dorm.id) if dorm else url_for('add_dorm') }}" method="post">
-            <div class="form-group">
-              <label for="name">Name:</label>
-              <input type="text" class="form-control" id="name" name="name" value="{{ dorm.name if dorm }}" required>
-            </div>
-
-            <div class="form-group">
-              <label for="description">Description:</label>
-              <textarea class="form-control" id="description" name="description" rows="3">{{ dorm.description if dorm }}</textarea>
+          {% include 'add_dorm.html' %}
         </div>
-
-        <div class="form-group">
-          <label for="image_url">Image URL:</label>
-          <input type="url" class="form-control" id="image_url" name="image_url" value="{{ dorm.image_url if dorm }}">
-        </div>
-
-        <div class="form-group">
-          <label for="maps_url">Maps URL:</label>
-          <input type="url" class="form-control" id="maps_url" name="maps_url" value="{{ dorm.maps_url if dorm }}">
-        </div>
-
-        <button type="submit" class="btn btn-primary">{{ 'Update' if dorm else 'Add' }} Dorm</button>
-      </form>
+      </div>
     </div>
   </div>
-</div>
-  </div>
+
   <script>
     const searchInput = document.getElementById('search-input');
     const dormCards = document.querySelectorAll('.dorm-card');

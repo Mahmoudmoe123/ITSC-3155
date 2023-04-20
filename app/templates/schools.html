@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">Schools</h1>
+  <div class="row">
+    {% for school in schools %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+        <div class="card-body">
+        <h5 class="card-title">{{ school.name }}</h5>
+        <p class="card-text">Number of Dorms: {{ school.dorm_count }}</p>
+        <p class="card-text">Total Ratings: {{ school.total_ratings }}</p>
+        <a href="{{ url_for('school_page', school_id=school.id) }}" class="btn btn-primary">View Dorms</a>
+        </div>
+        </div>
+        </div>
+        {% endfor %}
+        
+          </div>
+        </div>
+        {% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Manage Dorms</h1>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>School</th>
+    </tr>
+    {% for dorm in dorms %}
+      <tr>
+        <td>{{ dorm.id }}</td>
+        <td>{{ dorm.name }}</td>
+        <td>{{ dorm.school.name }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}
