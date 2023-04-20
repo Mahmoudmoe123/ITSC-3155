@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ dorm.name }}</h1>
+  <p>{{ dorm.description }}</p>
+  <img src="{{ dorm.image_url }}" alt="{{ dorm.name }} image">
+  <a href="{{ dorm.maps_url }}" target="_blank">View on Map</a>
+
+  <h2>Ratings</h2>
+  <ul>
+    {% for rating in ratings %}
+      <li>
+        <p>Rating: {{ rating.rating }}</p>
+        <p>Comment: {{ rating.comment }}</p>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
