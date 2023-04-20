@@ -55,23 +55,36 @@ def dorm_page(dorm_id):
     return render_template('dorm_page.html', dorm=dorm, ratings=ratings)
 
 @app.route('/add_dorm', methods=['GET', 'POST'])
-def add_dorm():
+@app.route('/add_dorm/<int:dorm_id>', methods=['GET', 'POST'])
+def add_dorm(dorm_id=None):
+    dorm = None
+    if dorm_id:
+        dorm = Dorm.query.get_or_404(dorm_id)
+
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
         image_url = request.form['image_url']
         maps_url = request.form['maps_url']
 
-        new_dorm = Dorm(name=name, description=description, image_url=image_url, maps_url=maps_url)
-        db.session.add(new_dorm)
-        db.session.commit()
+        if dorm:
+            dorm.name = name
+            dorm.description = description
+            dorm.image_url = image_url
+            dorm.maps_url = maps_url
+            flash('Dorm updated successfully', 'success')
+        else:
+            new_dorm = Dorm(name=name, description=description, image_url=image_url, maps_url=maps_url)
+            db.session.add(new_dorm)
+            flash('Dorm added successfully', 'success')
 
-        flash('Dorm added successfully', 'success')
+        db.session.commit()
         return redirect(url_for('dorms'))
 
-    return render_template('add_dorm.html')
+    return render_template('add_dorm.html', dorm=dorm)
 
-@app.route('/')
+
+@app.route('/dash')
 def dashboard():
     # Query all dorms and their ratings
     dorms = Dorm.query.all()
@@ -97,6 +110,33 @@ def dashboard():
     latest_ratings = Rating.query.order_by(Rating.id.desc()).limit(5).all()
 
     return render_template('dashboard.html', featured_dorms=featured_dorms, normal_dorms=normal_dorms, latest_ratings=latest_ratings)
+
+@app.route('/')
+def landing():
+    # Query all dorms and their ratings
+    dorms = Dorm.query.all()
+    
+    # Calculate the average rating for each dorm
+    for dorm in dorms:
+        ratings = Rating.query.filter_by(dorm_id=dorm.id).all()
+        total_ratings = sum(rating.rating for rating in ratings)
+        if ratings:
+            dorm.average_rating = total_ratings / len(ratings)
+        else:
+            dorm.average_rating = None
+
+    # Sort the dorms by their average rating, descending
+    dorms.sort(key=lambda dorm: dorm.average_rating or 0, reverse=True)
+
+
+    # Separate the dorms into featured and normal dorms
+    featured_dorms = dorms[:2]
+    normal_dorms = dorms[2:]
+
+    # Query the latest ratings
+    latest_ratings = Rating.query.order_by(Rating.id.desc()).limit(5).all()
+
+    return render_template('landing_page.html', featured_dorms=featured_dorms, normal_dorms=normal_dorms, latest_ratings=latest_ratings)
 
 
 
