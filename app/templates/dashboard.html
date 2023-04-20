@@ -14,11 +14,12 @@
           <img src="{{ dorm.image_url }}" class="card-img-top" alt="{{ dorm.name }}" style="height: 200px; object-fit: cover;">
           <div class="card-body">
             <h5 class="card-title">{{ dorm.name }}</h5>
+            
             <p class="card-text">{{ dorm.description|truncate(100) }}</p>
-            <i class="fa-solid fa-star"></i><a href="{{ url_for('dorm_page', dorm_id=dorm.id) }}" class="alert text-warning">{{ dorm.average_rating }}</a>
             {% if current_user.is_authenticated %}
             <a href="{{ url_for('rate_dorm', dorm_id=dorm.id) }}" class="btn btn-primary right">Rate Dorm</a>
             {% endif %}
+            <a href="{{ url_for('dorm_page', dorm_id=dorm.id) }}" class=" text-warning"> <i class="fa-solid fa-star"></i>{{ dorm.average_rating }}</a>
             
           </div>
         </div>
