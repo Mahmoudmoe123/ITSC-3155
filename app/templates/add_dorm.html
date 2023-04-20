@@ -1,20 +1,34 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Add a Dorm</h1>
-  <form action="{{ url_for('add_dorm') }}" method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
-    
-    <label for="description">Description:</label>
-    <textarea id="description" name="description"></textarea>
-    
-    <label for="image_url">Image URL:</label>
-    <input type="url" id="image_url" name="image_url">
-    
-    <label for="maps_url">Maps URL:</label>
-    <input type="url" id="maps_url" name="maps_url">
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <h1 class="mb-4">Add a Dorm</h1>
+        <form action="{{ url_for('add_dorm') }}" method="post">
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
 
-    <input type="submit" value="Add Dorm">
-  </form>
+          <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="image_url">Image URL:</label>
+            <input type="url" class="form-control" id="image_url" name="image_url">
+          </div>
+
+          <div class="form-group">
+            <label for="maps_url">Maps URL:</label>
+            <input type="url" class="form-control" id="maps_url" name="maps_url">
+          </div>
+
+          <button type="submit" class="btn btn-primary">Add Dorm</button>
+        </form>
+      </div>
+    </div>
+  </div>
 {% endblock %}

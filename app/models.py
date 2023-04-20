@@ -10,6 +10,7 @@ class Dorm(db.Model):
     image_url = db.Column(db.String(256), nullable=True)
     maps_url = db.Column(db.String(256), nullable=True)
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), nullable=False, unique=True)
@@ -23,6 +24,7 @@ class Rating(db.Model):
     rating = db.Column(db.Float, nullable=False)
     comment = db.Column(db.Text, nullable=True)
     user = db.relationship('User', backref=db.backref('ratings', lazy=True))
+    dorm = db.relationship('Dorm', backref=db.backref('ratings', lazy=True))
 
 class Vote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
