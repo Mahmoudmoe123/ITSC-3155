@@ -4,10 +4,10 @@
 <div class="container mt-4">
   <h1 class="mb-4">Dorms</h1>
   <div class="row">
-    <div class="col-md-4 mb-4">
+    <div class="col-md-12 mb-4">
       <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search-input">
-        <select class="form-control" id="sort-select">
+        <select class="form-control mr-sm-2" id="sort-select">
           <option value="rating-desc">Sort by Rating (High to Low)</option>
           <option value="rating-asc">Sort by Rating (Low to High)</option>
           <option value="name-asc">Sort by Name (A to Z)</option>
@@ -16,32 +16,33 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-dorm-modal">Add Dorm</button>
       </form>
     </div>
-</div>
-    
-<div class="row" id="dorm-cards">
-  {% for dorm in dorms %}
-    <div class="col-md-4 dorm-card">
-      <div class="card mb-4 shadow-sm border-0">
-        <img src="{{ dorm.image_url }}" class="card-img-top" alt="{{ dorm.name }}">
-        <div class="card-body">
-          <h5 class="card-title mb-2">{{ dorm.name }}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">{{ dorm.school.name }}</h6>
-          {% if dorm.average_rating %}
-                <p class="card-text mb-1">Average Rating: {{ "%.1f"|format(dorm.average_rating) }}</p>
-              {% else %}
-                <p class="card-text mb-1">No ratings available.</p>
+  </div>
+
+  <div class="row" id="dorm-cards">
+    {% for dorm in dorms %}
+      <div class="col-md-4 dorm-card">
+        <div class="card mb-4 shadow-sm border-0">
+          <img src="{{ dorm.image_url }}" class="card-img-top" alt="{{ dorm.name }}">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title mb-2">{{ dorm.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ dorm.school.name }}</h6>
+            {% if dorm.average_rating %}
+              <p class="card-text mb-1">Average Rating: {{ "%.1f"|format(dorm.average_rating) }}</p>
+            {% else %}
+              <p class="card-text mb-1">No ratings available.</p>
+            {% endif %}
+            <div class="d-flex justify-content-between align-items-center mt-auto">
+              <a href="{{ url_for('dorm_page', dorm_id=dorm.id) }}" class="btn btn-primary">View Details</a>
+              {% if current_user.is_authenticated %}
+                <a href="{{ url_for('rate_dorm', dorm_id=dorm.id) }}" class="btn btn-secondary">Rate Dorm</a>
               {% endif %}
-              <div class="d-flex justify-content-between align-items-center mt-auto">
-                <a href="{{ url_for('dorm_page', dorm_id=dorm.id) }}" class="btn btn-primary">View Details</a>
-                {% if current_user.is_authenticated %}
-                  <a href="{{ url_for('rate_dorm', dorm_id=dorm.id) }}" class="btn btn-secondary">Rate Dorm</a>
-                {% endif %}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  {% endfor %}
-</div>
+    {% endfor %}
   </div>
+</div>
 
   <!-- Add Dorm Modal -->
   <div class="modal fade" id="add-dorm-modal" tabindex="-1" role="dialog" aria-labelledby="add-dorm-modal-label" aria-hidden="true">

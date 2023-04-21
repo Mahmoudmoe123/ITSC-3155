@@ -5,6 +5,7 @@ from models import db, User, Dorm, Rating, Vote, School
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from flask import abort
+from admin_routes import admin_routes
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'
@@ -12,6 +13,8 @@ app.secret_key = 'your-secret-key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dorm_rating.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)    
+
+app.register_blueprint(admin_routes)
 
 def admin_required(f):
     @wraps(f)
@@ -28,67 +31,6 @@ def create_tables():
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'signin'
-
-@app.route('/admin')
-@admin_required
-def admin_dashboard():
-    return render_template('admin_dashboard.html')
-
-@app.route('/admin/schools')
-@admin_required
-def admin_schools():
-    all_schools = School.query.all()
-    return render_template('admin_schools.html', schools=all_schools)
-
-@app.route('/admin/dorms')
-@admin_required
-def admin_dorms():
-    dorms = Dorm.query.options(db.joinedload(Dorm.school)).all()
-    return render_template('admin_dorms.html', dorms=dorms)
-
-@app.route('/admin/ratings')
-@admin_required
-def admin_ratings():
-    all_ratings = Rating.query.all()
-    return render_template('admin_ratings.html', ratings=all_ratings)
-
-@app.route('/admin/users')
-@admin_required
-def admin_users():
-    all_users = User.query.all()
-    return render_template('admin_users.html', users=all_users)
-
-@app.route('/admin/add_school', methods=['GET', 'POST'])
-@admin_required
-def add_school():
-    if request.method == 'POST':
-        name = request.form['name']
-        new_school = School(name=name)
-        db.session.add(new_school)
-        db.session.commit()
-        flash('School added successfully', 'success')
-        return redirect(url_for('admin_schools'))
-    return render_template('add_school.html')
-
-@app.route('/admin/edit_school/<int:school_id>', methods=['GET', 'POST'])
-@admin_required
-def edit_school(school_id):
-    school = School.query.get_or_404(school_id)
-    if request.method == 'POST':
-        school.name = request.form['name']
-        db.session.commit()
-        flash('School updated successfully', 'success')
-        return redirect(url_for('admin_schools'))
-    return render_template('edit_school.html', school=school)
-
-@app.route('/admin/delete_school/<int:school_id>', methods=['POST'])
-@admin_required
-def delete_school(school_id):
-    school = School.query.get_or_404(school_id)
-    db.session.delete(school)
-    db.session.commit()
-    flash('School deleted successfully', 'success')
-    return redirect(url_for('admin_schools'))
 
 
 @login_manager.user_loader
@@ -119,14 +61,16 @@ def dorms():
             dorm.average_rating = sum([rating.rating for rating in ratings]) / len(ratings)
         else:
             dorm.average_rating = None
-    return render_template('dorms.html', dorms=dorms)
+    schools = School.query.all()  # Add this line to fetch all schools
+    return render_template('dorms.html', dorms=dorms, schools = schools)
 
 
 @app.route('/dorms/<int:dorm_id>')
 def dorm_page(dorm_id):
     dorm = Dorm.query.get_or_404(dorm_id)
     ratings = Rating.query.filter_by(dorm_id=dorm_id).all()
-    return render_template('dorm_page.html', dorm=dorm, ratings=ratings)
+    schools = School.query.all()  # Add this line to fetch all schools
+    return render_template('dorm_page.html', dorm=dorm, ratings=ratings, schools = schools)
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import Dorm, School
@@ -287,7 +231,72 @@ def rate_dorm(dorm_id):
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    team_members = [
+    {
+        "icon": "fa-user",
+        "name": "Dhruv M",
+        "description": "Dhruv is a computer science major who loves web development and exploring new technologies.",
+    },
+    {
+        "icon": "fa-user",
+        "name": "Manav M",
+        "description": "Manav is an electrical engineering student passionate about embedded systems and IoT.",
+    },
+    {
+        "icon": "fa-user",
+        "name": "Mohamoud M",
+        "description": "Mohamoud is a mathematics enthusiast who enjoys solving complex problems and programming challenges.",
+    },
+    {
+        "icon": "fa-user",
+        "name": "Ayush L",
+        "description": "Ayush is a computer science major with a focus on data science and machine learning.",
+    },
+    ]
+
+    technologies = [
+        {
+            "icon": "fab fa-html5",
+            "name": "HTML5",
+            "description": "We use HTML5 to create the structure and layout of our web pages.",
+        },
+        {
+            "icon": "fab fa-css3-alt",
+            "name": "CSS3",
+            "description": "CSS3 is used for styling our web pages and making them visually appealing.",
+        },
+        {
+            "icon": "fab fa-js-square",
+            "name": "JavaScript",
+            "description": "JavaScript adds interactivity and dynamic content to our web pages.",
+        },
+        {
+            "icon": "fab fa-bootstrap",
+            "name": "Bootstrap",
+            "description": "Bootstrap is a responsive CSS framework that simplifies web design and development.",
+        },
+        {
+            "icon": "fab fa-python",
+            "name": "Python",
+            "description": "Python is our back-end programming language, powering our server-side logic.",
+        },
+        {
+            "icon": "fab fa-flask",
+            "name": "Flask",
+            "description": "Flask is a lightweight web framework for Python, used to build our web application.",
+        },
+            ]
+
+    github_stats = {
+        "profile_url": "https://github.com/your-username",
+        "followers": 50,
+        "repositories": 12,
+        "views": 2500,
+        "stars": 100,
+    }
+
+    return render_template('about.html', team_members=team_members, technologies=technologies, github_stats=github_stats)
+
 
 @app.route('/ratings')
 @login_required
@@ -315,20 +324,6 @@ def signup():
             return redirect(url_for('signin'))
 
     return render_template('sign_up.html')
-
-@app.route('/admin/users/<int:user_id>/toggle_admin')
-@admin_required
-def toggle_admin(user_id):
-    user = User.query.get_or_404(user_id)
-    user.is_admin = not user.is_admin
-    db.session.commit()
-
-    if user.is_admin:
-        flash(f"{user.username} is now an admin.", "success")
-    else:
-        flash(f"{user.username} is no longer an admin.", "success")
-
-    return redirect(url_for('admin_users'))
 
 @app.route('/signout')
 @login_required

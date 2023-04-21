@@ -1,11 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Admin Dashboard</h1>
-  <ul>
-    <li><a href="{{ url_for('admin_schools') }}">Manage Schools</a></li>
-    <li><a href="{{ url_for('admin_dorms') }}">Manage Dorms</a></li>
-    <li><a href="{{ url_for('admin_ratings') }}">Manage Ratings</a></li>
-    <li><a href="{{ url_for('admin_users') }}">Manage Users</a></li>
-  </ul>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <div class="card shadow-lg p-3 mb-5 bg-white rounded">
+          <div class="card-body">
+            <h1 class="text-center">Admin Dashboard</h1>
+            <ul class="list-group">
+              <li class="list-group-item">
+                <a href="{{ url_for('admin_routes.admin_schools') }}" class="text-dark">Manage Schools</a>
+              </li>
+              <li class="list-group-item">
+                <a href="{{ url_for('admin_routes.admin_dorms') }}" class="text-dark">Manage Dorms</a>
+              </li>
+              <li class="list-group-item">
+                <a href="{{ url_for('admin_routes.admin_ratings') }}" class="text-dark">Manage Ratings</a>
+              </li>
+              <li class="list-group-item">
+                <a href="{{ url_for('admin_routes.admin_users') }}" class="text-dark">Manage Users</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
