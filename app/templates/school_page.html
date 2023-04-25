@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+  <h1 class="mb-4">{{ school.name }}</h1>
+  <div class="row">
+    {% for dorm in dorms %}
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <img src="{{ dorm.image_url }}" class="card-img-top" alt="{{ dorm.name }}">
+          <div class="card-body">
+            <h5 class="card-title">{{ dorm.name }}</h5>
+            {% if dorm.average_rating %}
+              <p>Average rating: {{ dorm.average_rating }}</p>
+            {% else %}
+              <p>No ratings yet</p>
+            {% endif %}
+            <a href="{{ url_for('dorm_page', dorm_id=dorm.id) }}" class="btn btn-primary">View Dorm</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

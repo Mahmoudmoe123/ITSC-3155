@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Manage Ratings</h1>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>User</th>
+      <th>Dorm</th>
+      <th>Rating</th>
+      <th>Comment</th>
+    </tr>
+    {% for rating in ratings %}
+      <tr>
+        <td>{{ rating.id }}</td>
+        <td>{{ rating.user.username }}</td>
+        <td>{{ rating.dorm.name }}</td>
+        <td>{{ rating.rating }}</td>
+        <td>{{ rating.comment }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

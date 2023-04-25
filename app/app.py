@@ -1,14 +1,28 @@
 from flask import Flask, flash, render_template, request, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
-from models import db, User, Dorm, Rating, Vote
+from flask_oauthlib.client import OAuth
+from models import db, User, Dorm, Rating, Vote, School
 from werkzeug.security import check_password_hash, generate_password_hash
+from functools import wraps
+from flask import abort
+from admin_routes import admin_routes
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dorm_rating.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db.init_app(app)
+db.init_app(app)    
+
+app.register_blueprint(admin_routes)
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
 
 def create_tables():
     with app.app_context():
@@ -17,6 +31,7 @@ def create_tables():
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'signin'
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -39,20 +54,26 @@ def signin():
 
 @app.route('/dorms')
 def dorms():
-    all_dorms = Dorm.query.all()
-    for dorm in all_dorms:
+    dorms = Dorm.query.options(db.joinedload(Dorm.school)).all()
+    for dorm in dorms:
         ratings = Rating.query.filter_by(dorm_id=dorm.id).all()
         if ratings:
             dorm.average_rating = sum([rating.rating for rating in ratings]) / len(ratings)
         else:
             dorm.average_rating = None
-    return render_template('dorms.html', dorms=all_dorms)
+    schools = School.query.all()  # Add this line to fetch all schools
+    return render_template('dorms.html', dorms=dorms, schools = schools)
+
 
 @app.route('/dorms/<int:dorm_id>')
 def dorm_page(dorm_id):
     dorm = Dorm.query.get_or_404(dorm_id)
     ratings = Rating.query.filter_by(dorm_id=dorm_id).all()
-    return render_template('dorm_page.html', dorm=dorm, ratings=ratings)
+    schools = School.query.all()  # Add this line to fetch all schools
+    return render_template('dorm_page.html', dorm=dorm, ratings=ratings, schools = schools)
+
+from flask import Flask, render_template, request, redirect, url_for, flash
+from models import Dorm, School
 
 @app.route('/add_dorm', methods=['GET', 'POST'])
 @app.route('/add_dorm/<int:dorm_id>', methods=['GET', 'POST'])
@@ -60,28 +81,66 @@ def add_dorm(dorm_id=None):
     dorm = None
     if dorm_id:
         dorm = Dorm.query.get_or_404(dorm_id)
+    schools = School.query.all()
 
     if request.method == 'POST':
         name = request.form['name']
         description = request.form['description']
         image_url = request.form['image_url']
         maps_url = request.form['maps_url']
+        school_id = request.form['school_id']
+
+        if school_id == 'misc':
+            # Create a miscellaneous school if it doesn't exist
+            misc_school = School.query.filter_by(name='Miscellaneous').first()
+            if not misc_school:
+                misc_school = School(name='Miscellaneous')
+                db.session.add(misc_school)
+                db.session.commit()
+            school_id = misc_school.id
 
         if dorm:
+            # Update existing dorm
             dorm.name = name
             dorm.description = description
             dorm.image_url = image_url
             dorm.maps_url = maps_url
+            dorm.school_id = school_id
             flash('Dorm updated successfully', 'success')
         else:
-            new_dorm = Dorm(name=name, description=description, image_url=image_url, maps_url=maps_url)
+            # Add new dorm
+            new_dorm = Dorm(name=name, description=description, image_url=image_url, maps_url=maps_url, school_id=school_id)
             db.session.add(new_dorm)
             flash('Dorm added successfully', 'success')
 
         db.session.commit()
         return redirect(url_for('dorms'))
 
-    return render_template('add_dorm.html', dorm=dorm)
+    return render_template('add_dorm.html', dorm=dorm, schools=schools)
+
+@app.route('/schools')
+def schools():
+    all_schools = School.query.all()
+    for school in all_schools:
+        dorms = Dorm.query.filter_by(school_id=school.id).all()
+        school.dorm_count = len(dorms)
+        ratings = Rating.query.join(Dorm, Dorm.id == Rating.dorm_id).filter(Dorm.school_id == school.id).all()
+        school.total_ratings = len(ratings)
+    return render_template('schools.html', schools=all_schools)
+
+
+@app.route('/schools/<int:school_id>')
+def school_page(school_id):
+    school = School.query.get_or_404(school_id)
+    dorms = Dorm.query.filter_by(school_id=school_id).all()
+    for dorm in dorms:
+        ratings = Rating.query.filter_by(dorm_id=dorm.id).all()
+        if ratings:
+            dorm.average_rating = sum([rating.rating for rating in ratings]) / len(ratings)
+        else:
+            dorm.average_rating = None
+    return render_template('school_page.html', school=school, dorms=dorms)
+
 
 
 @app.route('/dash')
@@ -172,7 +231,72 @@ def rate_dorm(dorm_id):
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    team_members = [
+    {
+        "icon": "fa-user",
+        "name": "Dhruv M",
+        "description": "Dhruv is a computer science major who loves web development and exploring new technologies.",
+    },
+    {
+        "icon": "fa-user",
+        "name": "Manav M",
+        "description": "Manav is an electrical engineering student passionate about embedded systems and IoT.",
+    },
+    {
+        "icon": "fa-user",
+        "name": "Mohamoud M",
+        "description": "Mohamoud is a mathematics enthusiast who enjoys solving complex problems and programming challenges.",
+    },
+    {
+        "icon": "fa-user",
+        "name": "Ayush L",
+        "description": "Ayush is a computer science major with a focus on data science and machine learning.",
+    },
+    ]
+
+    technologies = [
+        {
+            "icon": "fab fa-html5",
+            "name": "HTML5",
+            "description": "We use HTML5 to create the structure and layout of our web pages.",
+        },
+        {
+            "icon": "fab fa-css3-alt",
+            "name": "CSS3",
+            "description": "CSS3 is used for styling our web pages and making them visually appealing.",
+        },
+        {
+            "icon": "fab fa-js-square",
+            "name": "JavaScript",
+            "description": "JavaScript adds interactivity and dynamic content to our web pages.",
+        },
+        {
+            "icon": "fab fa-bootstrap",
+            "name": "Bootstrap",
+            "description": "Bootstrap is a responsive CSS framework that simplifies web design and development.",
+        },
+        {
+            "icon": "fab fa-python",
+            "name": "Python",
+            "description": "Python is our back-end programming language, powering our server-side logic.",
+        },
+        {
+            "icon": "fab fa-flask",
+            "name": "Flask",
+            "description": "Flask is a lightweight web framework for Python, used to build our web application.",
+        },
+            ]
+
+    github_stats = {
+        "profile_url": "https://github.com/your-username",
+        "followers": 50,
+        "repositories": 12,
+        "views": 2500,
+        "stars": 100,
+    }
+
+    return render_template('about.html', team_members=team_members, technologies=technologies, github_stats=github_stats)
+
 
 @app.route('/ratings')
 @login_required

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mb-4">Manage Schools</h1>
+    <a class="btn btn-primary mb-3" href="{{ url_for('admin_routes.add_school') }}">Add School</a>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for school in schools %}
+          <tr>
+            <td>{{ school.id }}</td>
+            <td>{{ school.name }}</td>
+            <td>
+              <a class="btn btn-secondary mr-2" href="{{ url_for('admin_routes.edit_school', school_id=school.id) }}">Edit</a>
+              <form method="post" action="{{ url_for('admin_routes.delete_school', school_id=school.id) }}" style="display:inline;">
+                <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete this school?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
